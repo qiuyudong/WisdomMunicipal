@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:background="@drawable/bg"
+                android:fitsSystemWindows="true" >
+    <ImageView
+        android:layout_marginTop="40dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/logo"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"/>
+
+    <RelativeLayout
+        android:id="@+id/login_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="110dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:gravity="center" >
+
+        <FrameLayout
+            android:id="@+id/username_layout"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="55dp"
+            android:background="@color/white"
+            android:gravity="center" >
+
+            <!-- android:inputType="number" -->
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_gravity="left|center_vertical"
+                android:background="@drawable/username"
+                android:visibility="visible" />
+
+            <Button
+                android:id="@+id/bt_username_clear"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_gravity="right|center_vertical"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/email_delete_pressed"
+                android:visibility="invisible" />
+
+            <EditText
+                android:id="@+id/username"
+                android:background="@null"
+                android:layout_width="fill_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="5dp"
+                android:maxLength="20"
+                android:hint="用户名"
+                android:paddingLeft="35dp"
+                android:paddingRight="60dp">
+            </EditText>
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/usercode_layout"
+            android:background="@color/white"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/username_layout"
+            android:layout_marginTop="1dp"
+            android:gravity="center" >
+
+            <EditText
+                android:id="@+id/password"
+                android:background="@null"
+                android:layout_width="fill_parent"
+                android:layout_height="40dp"
+                android:inputType="textPassword"
+                android:maxLength="20"
+                android:hint="密码"
+                android:paddingLeft="35dp"
+                android:paddingRight="60dp" >
+            </EditText>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_gravity="left|center_vertical"
+                android:background="@drawable/password" />
+
+            <Button
+                android:id="@+id/bt_pwd_eye"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="right|center_vertical"
+                android:background="@drawable/password_close" />
+
+            <Button
+                android:id="@+id/bt_pwd_clear"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_gravity="right|center_vertical"
+                android:layout_marginRight="45dp"
+                android:background="@drawable/email_delete_pressed"
+                android:visibility="invisible" />
+        </FrameLayout>
+
+        <Button
+            android:id="@+id/login"
+            android:layout_width="fill_parent"
+            android:layout_height="40dp"
+            android:layout_below="@id/usercode_layout"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/shape"
+            android:gravity="center"
+            android:text="登 录"
+            android:textSize="20sp"
+            android:textColor="@android:color/white" />
+
+
+
+    </RelativeLayout>
+
+</RelativeLayout>
