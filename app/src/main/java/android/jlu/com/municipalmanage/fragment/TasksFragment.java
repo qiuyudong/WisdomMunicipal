@@ -7,6 +7,7 @@ import android.jlu.com.municipalmanage.activity.InternetPicActivity;
 import android.jlu.com.municipalmanage.activity.TaskItemActivity;
 import android.jlu.com.municipalmanage.baseclass.Task;
 import android.jlu.com.municipalmanage.baseclass.UriSet;
+import android.jlu.com.municipalmanage.utils.PreferenceUtils;
 import android.jlu.com.municipalmanage.utils.RetrofitGetTasks;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -52,7 +53,9 @@ public class TasksFragment extends BaseFragment1 {
     private SwipeRefreshLayout swipeRefresh;
     //实现搜索
     private EditText mEditText;
-    private Button mButton;
+    private Button youritem,allitems;
+
+    ProgressDialog dialog;
 
     public static TasksFragment newInstance(String name) {
         Bundle args = new Bundle();
@@ -70,17 +73,32 @@ public class TasksFragment extends BaseFragment1 {
         mRecyclerView = (RecyclerView)view.findViewById(R.id.task_recycler_view);
         swipeRefresh = (SwipeRefreshLayout)view.findViewById(R.id.swipe_refresh);
         mEditText = (EditText)view.findViewById(R.id.search);
-        mButton = (Button)view.findViewById(R.id.clear);
+        youritem = (Button)view.findViewById(R.id.youritem);
+        youritem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initDate();
+            }
+        });
+
+        allitems = (Button)view.findViewById(R.id.allitems);
+        allitems.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog = new ProgressDialog(getActivity());
+                dialog.setCancelable(false);// 设置是否可以通过点击Back键取消
+                dialog.setCanceledOnTouchOutside(false);// 设置在点击Dialog外是否取消Dialog进度条
+                // 设置提示的title的图标，默认是没有的，如果没有设置title的话只设置Icon是不会显示图标的
+                dialog.setTitle("提示");
+                dialog.setMessage("正在加载...");
+                dialog.show();
+                showAll();
+            }
+        });
+
         //设置管理
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         initDate();
-        //清除按钮
-        mButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mEditText.setText("");
-            }
-        });
 
         //输入框监听
         mEditText.addTextChangedListener(new TextWatcher() {
@@ -88,19 +106,8 @@ public class TasksFragment extends BaseFragment1 {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
             }
-
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // 获得文本框中的用户
-                String search = mEditText.getText().toString().trim();
-                if ("".equals(search)) {
-                    // 输入为空,设置按钮不可见
-                    mButton.setVisibility(View.INVISIBLE);
-                } else {
-                    // 输入不为空，设置按钮可见
-                    mButton.setVisibility(View.VISIBLE);
-                }
-
                 filterData(s.toString());
             }
 
@@ -135,7 +142,6 @@ public class TasksFragment extends BaseFragment1 {
                 String type = sortModel.getType();
                 String address = sortModel.getAddress();
                 String id = sortModel.getId()+"";
-
                 if (type.indexOf(filterStr) != -1 || address.indexOf(filterStr)!= -1 || id.indexOf(filterStr)!= -1) {
                     mProBeanBeen1.add(sortModel);
                 }
@@ -150,37 +156,15 @@ public class TasksFragment extends BaseFragment1 {
     private void  initDate(){
         //  进度条
 
-        final ProgressDialog dialog = new ProgressDialog(getActivity());
+        dialog = new ProgressDialog(getActivity());
         dialog.setCancelable(false);// 设置是否可以通过点击Back键取消
         dialog.setCanceledOnTouchOutside(false);// 设置在点击Dialog外是否取消Dialog进度条
         // 设置提示的title的图标，默认是没有的，如果没有设置title的话只设置Icon是不会显示图标的
         dialog.setTitle("提示");
         dialog.setMessage("正在加载...");
         dialog.show();
+        showYour();
 
-        //开启网络请求
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(UriSet.SERVER_URI)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        RetrofitGetTasks retrofitGetTasks = retrofit.create(RetrofitGetTasks.class);
-        Call<Task> call = retrofitGetTasks.getTasks();
-        call.enqueue(new Callback<Task>() {
-            @Override
-            public void onResponse(Call<Task> call, Response<Task> response) {
-                dialog.dismiss();
-                mProBeanBeen = response.body().getProBean();
-                //初始化构造器
-                Adapter = new TaskAdapter(mProBeanBeen);
-                mRecyclerView.setAdapter(Adapter);
-            }
-
-            @Override
-            public void onFailure(Call<Task> call, Throwable t) {
-                dialog.dismiss();
-                Toast.makeText(getActivity(),"网络错误，请检查网络",Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
 
@@ -223,6 +207,75 @@ public class TasksFragment extends BaseFragment1 {
 
     }
 
+    //查看全部
+    private void showAll(){
+        //开启网络请求
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(UriSet.SERVER_URI)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        RetrofitGetTasks retrofitGetTasks = retrofit.create(RetrofitGetTasks.class);
+        Call<Task> call = retrofitGetTasks.getTasks();
+        call.enqueue(new Callback<Task>() {
+            @Override
+            public void onResponse(Call<Task> call, Response<Task> response) {
+                dialog.dismiss();
+                mProBeanBeen = response.body().getProBean();
+                //初始化构造器
+                Adapter = new TaskAdapter(mProBeanBeen);
+                mRecyclerView.setAdapter(Adapter);
+            }
+
+            @Override
+            public void onFailure(Call<Task> call, Throwable t) {
+                dialog.dismiss();
+                Toast.makeText(getActivity(),"网络错误，请检查网络",Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    //查看自己
+    private void showYour(){
+        //开启网络请求
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(UriSet.SERVER_URI)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        RetrofitGetTasks retrofitGetTasks = retrofit.create(RetrofitGetTasks.class);
+        Call<Task> call = retrofitGetTasks.getTasks();
+        call.enqueue(new Callback<Task>() {
+            @Override
+            public void onResponse(Call<Task> call, Response<Task> response) {
+                dialog.dismiss();
+                mProBeanBeen = response.body().getProBean();
+                mProBeanBeen = selectYour(mProBeanBeen);
+                //初始化构造器
+                Adapter = new TaskAdapter(mProBeanBeen);
+                mRecyclerView.setAdapter(Adapter);
+            }
+
+            @Override
+            public void onFailure(Call<Task> call, Throwable t) {
+                dialog.dismiss();
+                Toast.makeText(getActivity(),"网络错误，请检查网络",Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    //筛选自己的
+    private List<Task.ProBeanBean> selectYour(List<Task.ProBeanBean>  proBeanBeen){
+        String finder = PreferenceUtils.getString(getActivity(),"USER_NAME","wrong");
+        Log.d(TAG, "selectYour: "+finder);
+        List<Task.ProBeanBean> proBeanList = new ArrayList<>();
+        for (Task.ProBeanBean pro:proBeanBeen
+             ) {
+            Log.d(TAG, "-------"+pro.getPro_finder());
+               if(finder.equals(pro.getPro_finder())){
+                   proBeanList.add(pro);
+               }
+        }
+        return proBeanList;
+    }
     //实现adapter和ViewHolder
     private class TasksHolder extends RecyclerView.ViewHolder{
         public TextView find_time,task_address,task_type,task_state,task_id;
@@ -339,6 +392,8 @@ public class TasksFragment extends BaseFragment1 {
             return probeanlist.size();
         }
     }
+
+
 
 
 }

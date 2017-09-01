@@ -213,8 +213,7 @@ public class LoginActivity extends ActionBarActivity implements View.OnClickList
         }
 
     }
-
-
+    
     //登录成功获取信息
     private void initUserInfor(User.EmpBeanBean empBeanBean){
         //保持登录状态

@@ -25,13 +25,21 @@
                 android:paddingRight="60dp" >
             </EditText>
             <Button
-                android:id="@+id/clear"
-                android:layout_width="35dp"
+                android:id="@+id/youritem"
+                android:layout_width="40dp"
                 android:layout_height="35dp"
                 android:layout_gravity="right|center_vertical"
                 android:layout_marginRight="45dp"
-                android:background="@drawable/email_delete_pressed"
-                android:visibility="invisible" />
+                android:text="我"
+                />
+            <Button
+                android:id="@+id/allitems"
+                android:layout_width="40dp"
+                android:layout_height="35dp"
+                android:layout_gravity="right|center_vertical"
+                android:text="全"
+                />
+
         </FrameLayout>
 
 

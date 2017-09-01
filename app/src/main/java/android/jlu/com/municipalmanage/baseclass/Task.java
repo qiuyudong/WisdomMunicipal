@@ -37,6 +37,17 @@ public class Task {
         private int pro_state;
         private String site_desc;
         private String type;
+        private String pro_finder;
+
+        public String getPro_finder() {
+            return pro_finder;
+        }
+
+        public void setPro_finder(String pro_finder) {
+            this.pro_finder = pro_finder;
+        }
+
+
 
         public String getAddress() {
             return address;

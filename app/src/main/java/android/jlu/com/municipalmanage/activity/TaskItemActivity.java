@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class TaskItemActivity extends AppCompatActivity  {
      private TextView task_id,task_time,task_address,task_type,task_state,task_desc;
@@ -74,9 +75,15 @@ public class TaskItemActivity extends AppCompatActivity  {
         show_video.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                            Intent intent_photo = new Intent(TaskItemActivity.this,InternetVideoActivity.class);
-                            intent_photo.putExtra("URI",videoUri);
-                            startActivity(intent_photo);
+
+                if(videoUri.equals("")){
+                    Toast.makeText(TaskItemActivity.this,"该项目未上传视频~",Toast.LENGTH_LONG).show();
+                }else{
+                    Intent intent_photo = new Intent(TaskItemActivity.this,InternetVideoActivity.class);
+                    intent_photo.putExtra("URI",videoUri);
+                    startActivity(intent_photo);
+                }
+
             }
         });
 

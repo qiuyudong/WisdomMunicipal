@@ -118,7 +118,7 @@ public class ReportActivity extends Activity {
         address = intent.getStringExtra("address");
         tv_address.setText(address);
         Toast.makeText(this,address, Toast.LENGTH_SHORT).show();
-        finder = PreferenceUtils.getString(this,"USER_NAME","wowowo");
+        finder = PreferenceUtils.getString(this,"USER_NAME","wrong");
 
 
         //上传数据
@@ -133,56 +133,95 @@ public class ReportActivity extends Activity {
                 if(site_desc.equals("")||type .equals("")||address.equals("")){
                     Toast.makeText(ReportActivity.this,
                             "请确定所有信息均填入",Toast.LENGTH_SHORT).show();
-                }else if(PHOTO_PIC_PATH.equals("")||videoUri.equals("")){
+                }else if(PHOTO_PIC_PATH.equals("")){
                     Toast.makeText(ReportActivity.this,
-                            "请确定照片和视频均拍摄",Toast.LENGTH_SHORT).show();
-                }else {
+                            "请确定照片拍摄",Toast.LENGTH_SHORT).show();
+                }else if(videoUri.equals("")){
+                    //当视频为空时候只上传图片
+                    upload_photo = new File(PHOTO_PIC_PATH);
+                    //上传
+                    Retrofit retrofit = new Retrofit.Builder()
+                            .baseUrl(UriSet.UPLOAD_URI)
+                            .addConverterFactory(ScalarsConverterFactory.create())
+                            .build();
+                    RetrofitUploadUtil retrofitUploadUtil = retrofit.create(RetrofitUploadUtil.class);
+                    RequestBody requestFile1 = RequestBody.create(MediaType.parse("image/jpeg"), upload_photo);
+                    MultipartBody.Part[]  file = new MultipartBody.Part[1];
+                    file[0] = MultipartBody.Part.createFormData("upload", upload_photo.getName(), requestFile1);
+                    final ProgressDialog dialog = new ProgressDialog(ReportActivity.this);
+                    dialog.setCancelable(false);// 设置是否可以通过点击Back键取消
+                    dialog.setCanceledOnTouchOutside(false);// 设置在点击Dialog外是否取消Dialog进度条
+                    // 设置提示的title的图标，默认是没有的，如果没有设置title的话只设置Icon是不会显示图标的
+                    dialog.setTitle("提示");
+                    dialog.setMessage("正在上传");
+                    dialog.show();
+                    Call<String> call = retrofitUploadUtil.updateImage(file,
+                            RequestBody.create(null, longitude),
+                            RequestBody.create(null, latitude),
+                            RequestBody.create(null, address),
+                            RequestBody.create(null, site_desc),
+                            RequestBody.create(null, finder),
+                            RequestBody.create(null, find_time),
+                            RequestBody.create(null, type));
+
+                    call.enqueue(new Callback<String>() {
+                        @Override
+                        public void onResponse(Call<String> call, Response<String> response) {
+                            dialog.dismiss();
+                            Toast.makeText(ReportActivity.this,"提示信息："+response.body().toString(),Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+
+                        @Override
+                        public void onFailure(Call<String> call, Throwable t) {
+                            dialog.dismiss();
+                            Toast.makeText(ReportActivity.this,"网络错误，请检查网络设置",Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }else{
                     upload_photo = new File(PHOTO_PIC_PATH);
                     upload_video = new File(videoUri);
                     //上传
-                        Retrofit retrofit = new Retrofit.Builder()
-                                .baseUrl(UriSet.UPLOAD_URI)
-                                .addConverterFactory(ScalarsConverterFactory.create())
-                                .build();
-                        RetrofitUploadUtil retrofitUploadUtil = retrofit.create(RetrofitUploadUtil.class);
-                        RequestBody requestFile1 = RequestBody.create(MediaType.parse("image/jpeg"), upload_photo);
-                        RequestBody requestFile2 = RequestBody.create(MediaType.parse("multipart/form-data"), upload_video);
-                        MultipartBody.Part[]  file = new MultipartBody.Part[2];
-                        file[0] = MultipartBody.Part.createFormData("upload", upload_photo.getName(), requestFile1);
-                        file[1] = MultipartBody.Part.createFormData("upload", upload_video.getName(), requestFile2);
-                        //  file[1] = MultipartBody.Part.createFormData("upload", "test.mp4", requestFile2);
-                        final ProgressDialog dialog = new ProgressDialog(ReportActivity.this);
-                        dialog.setCancelable(false);// 设置是否可以通过点击Back键取消
-                        dialog.setCanceledOnTouchOutside(false);// 设置在点击Dialog外是否取消Dialog进度条
-                        // 设置提示的title的图标，默认是没有的，如果没有设置title的话只设置Icon是不会显示图标的
-                        dialog.setTitle("提示");
-                        dialog.setMessage("正在上传");
-                        dialog.show();
-                        Call<String> call = retrofitUploadUtil.updateImage(file,
-                                RequestBody.create(null, longitude),
-                                RequestBody.create(null, latitude),
-                                RequestBody.create(null, address),
-                                RequestBody.create(null, site_desc),
-                                RequestBody.create(null, finder),
-                                RequestBody.create(null, find_time),
-                                RequestBody.create(null, type));
+                    Retrofit retrofit = new Retrofit.Builder()
+                            .baseUrl(UriSet.UPLOAD_URI)
+                            .addConverterFactory(ScalarsConverterFactory.create())
+                            .build();
+                    RetrofitUploadUtil retrofitUploadUtil = retrofit.create(RetrofitUploadUtil.class);
+                    RequestBody requestFile1 = RequestBody.create(MediaType.parse("image/jpeg"), upload_photo);
+                    RequestBody requestFile2 = RequestBody.create(MediaType.parse("multipart/form-data"), upload_video);
+                    MultipartBody.Part[]  file = new MultipartBody.Part[2];
+                    file[0] = MultipartBody.Part.createFormData("upload", upload_photo.getName(), requestFile1);
+                    file[1] = MultipartBody.Part.createFormData("upload", upload_video.getName(), requestFile2);
+                    //  file[1] = MultipartBody.Part.createFormData("upload", "test.mp4", requestFile2);
+                    final ProgressDialog dialog = new ProgressDialog(ReportActivity.this);
+                    dialog.setCancelable(false);// 设置是否可以通过点击Back键取消
+                    dialog.setCanceledOnTouchOutside(false);// 设置在点击Dialog外是否取消Dialog进度条
+                    // 设置提示的title的图标，默认是没有的，如果没有设置title的话只设置Icon是不会显示图标的
+                    dialog.setTitle("提示");
+                    dialog.setMessage("正在上传");
+                    dialog.show();
+                    Call<String> call = retrofitUploadUtil.updateImage(file,
+                            RequestBody.create(null, longitude),
+                            RequestBody.create(null, latitude),
+                            RequestBody.create(null, address),
+                            RequestBody.create(null, site_desc),
+                            RequestBody.create(null, finder),
+                            RequestBody.create(null, find_time),
+                            RequestBody.create(null, type));
 
-                        call.enqueue(new Callback<String>() {
-                            @Override
-                            public void onResponse(Call<String> call, Response<String> response) {
-                                dialog.dismiss();
-                                Toast.makeText(ReportActivity.this,"提示信息："+response.body().toString(),Toast.LENGTH_SHORT).show();
-                                finish();
-                            }
-
-                            @Override
-                            public void onFailure(Call<String> call, Throwable t) {
-                                dialog.dismiss();
-                                Toast.makeText(ReportActivity.this,"网络错误，请检查网络设置",Toast.LENGTH_SHORT).show();
-                            }
-                        });
-
-
+                    call.enqueue(new Callback<String>() {
+                        @Override
+                        public void onResponse(Call<String> call, Response<String> response) {
+                            dialog.dismiss();
+                            Toast.makeText(ReportActivity.this,"提示信息："+response.body().toString(),Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+                        @Override
+                        public void onFailure(Call<String> call, Throwable t) {
+                            dialog.dismiss();
+                            Toast.makeText(ReportActivity.this,"网络错误，请检查网络设置",Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
 
             }

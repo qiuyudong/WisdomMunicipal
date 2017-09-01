@@ -19,7 +19,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -48,7 +47,7 @@ public class RepairUploadActivity extends AppCompatActivity {
     //照片路径
     private String PHOTO_PIC_PATH="";
 
-    private TextView task_id;
+    private EditText task_id;
     private EditText task_desc;
     private ImageView take_photo,photo_show;
     private Button mButton;
@@ -60,7 +59,7 @@ public class RepairUploadActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_repair_upload);
-        task_id = (TextView)findViewById(R.id.task_id);
+        task_id = (EditText)findViewById(R.id.task_id);
         task_desc = (EditText)findViewById(R.id.task_desc);
         take_photo = (ImageView)findViewById(iv_take_photo);
         photo_show = (ImageView) findViewById(iv_photo_show);

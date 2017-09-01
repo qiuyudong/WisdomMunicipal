@@ -171,8 +171,6 @@ public class ContactsFragment extends BaseFragment1{
                adapter = new SortAdapter(getActivity(), mContactsNames);
                listView.setAdapter(adapter);
 
-
-
            }
 
            @Override
@@ -207,26 +205,5 @@ public class ContactsFragment extends BaseFragment1{
         adapter.updateListView(mSortList);
     }
 
- /*   private List<ContactsName> filledData(String[] date) {
-        List<ContactsName> mSortList = new ArrayList<>();
-        ArrayList<String> indexString = new ArrayList<>();
-
-        for (int i = 0; i < date.length; i++) {
-            ContactsName sortModel = new ContactsName();
-            sortModel.setName(date[i]);
-            String pinyin = Cn2Spell.getPinYin(date[i]);
-            String sortString = pinyin.substring(0, 1).toUpperCase();
-            if (sortString.matches("[A-Z]")) {
-                sortModel.setFirstLetter(sortString.toUpperCase());
-                if (!indexString.contains(sortString)) {
-                    indexString.add(sortString);
-                }
-            }
-            mSortList.add(sortModel);
-        }
-        Collections.sort(indexString);
-        //sideBar.setScaleItemCount   (indexString);
-        return1 mSortList;
-    }*/
 
 }
